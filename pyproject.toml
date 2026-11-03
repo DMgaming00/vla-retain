@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=71,<82", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vla-retain"
+version = "0.1.0"
+description = "A matched-compute study of retention methods and a divergence test of forgetting in fine-tuned vision-language-action models."
+readme = "README.md"
+license = { file = "LICENSE" }
+# The pinned LeRobot release requires Python >= 3.12 (see docs/decisions.md).
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "lerobot[smolvla,peft,dataset,training,evaluation] @ git+https://github.com/huggingface/lerobot.git@7e241bd630a3719a56157a497ce5d08f244784f1",
+    "peft>=0.18.0,<1.0.0",
+    "numpy>=2.0,<2.3",
+    "pandas>=2.0,<3.0",
+    "scipy>=1.10,<2.0",
+    "matplotlib>=3.8,<4.0",
+    "pyyaml>=6.0,<7.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0,<9.0", "ruff>=0.6,<1.0"]
+# LIBERO is Linux only; install this extra on the cluster.
+libero = [
+    "lerobot[libero] @ git+https://github.com/huggingface/lerobot.git@7e241bd630a3719a56157a497ce5d08f244784f1",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+    "real_model: requires a cached copy of lerobot/smolvla_base",
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+src = ["src", "tests", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]

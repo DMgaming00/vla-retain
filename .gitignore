@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+
+# Artifacts that live on scratch, never in git
+checkpoints/
+outputs/
+videos/
+wandb/
+*.safetensors
+*.pt
+*.mp4
+slurm-*.out
+logs/
+
+# Generated figures are rebuilt from results/
+paper_assets/
+
+# Local environment
+.env
+.DS_Store
