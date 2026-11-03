@@ -16,3 +16,8 @@ One line per decision, with the date and the reason. Lines tagged `[spec-conflic
 - 2026-11-02: The batch sampler and per-step RNG are pure functions of (seed, step), because this makes resume exact without saving sampler or RNG state.
 - 2026-11-02: LM groups are thirds (early 0-4, mid 5-10, late 11-15); `embed_tokens` joins early, and `text_model.norm` and `lm_head` join late; `state_proj` joins the expert because M0 trains it.
 - 2026-11-02: In per-module merges the connector follows the LM, because it feeds the LM and the brief's grid has only LM and expert axes.
+- 2026-11-02: Build the M2 adapter with `peft.inject_adapter_in_model` rather than `wrap_with_peft`, because the policy keeps its class and every helper in `models/load.py` works unchanged.
+- 2026-11-02: M2 checkpoints hold only the adapter, and the evaluator bakes it onto S1 in memory, because a full copy per checkpoint costs 1.8 GB and the baked result is tested against PEFT's own merge.
+- 2026-11-02: Rolling resume state lives in `checkpoints/latest`, swapped in by directory rename, because a job killed mid-save must not corrupt the only resume point.
+- 2026-11-02: Stage-2 reuses S1's saved normalization stats, because any change in action normalization would shift every comparison against S1 and would make weight merges inconsistent.
+- 2026-11-02: Stage-1 stats are dataset-level (all 40 tasks), because they ship with the pinned revision; this leaks summary statistics of libero_10 into S1 but no demonstrations.

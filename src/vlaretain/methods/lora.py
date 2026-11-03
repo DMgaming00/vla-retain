@@ -8,6 +8,8 @@ import torch
 
 from vlaretain.config import RunConfig
 from vlaretain.methods.base import Method
+from vlaretain.models import load as model_load
+from vlaretain.models.modules import LM_GROUPS
 from vlaretain.utils.io import write_json
 
 
@@ -22,6 +24,7 @@ def lora_target_regex() -> str:
 class LoraSFT(Method):
     name = "lora"
     train_expert_only = True  # the base model stays frozen; PEFT marks only adapter weights as trainable
+    expected_groups = (*LM_GROUPS, "expert")
 
     def build_model(self, s1_ckpt, cfg: RunConfig) -> torch.nn.Module:
         from peft import LoraConfig, inject_adapter_in_model
@@ -39,8 +42,33 @@ class LoraSFT(Method):
         inject_adapter_in_model(config, policy)
         return policy
 
-    def checkpoint_kind(self) -> str:
-        return "lora"
+    def save_weights(self, policy: torch.nn.Module, ckpt_dir: Path, meta: dict) -> None:
+        """Save the adapter only. The evaluator bakes it onto S1 with `lora_merged_state_dict`."""
+        from peft import get_peft_model_state_dict
+        from safetensors.torch import save_file
+
+        adapter = {k: v.detach().cpu().contiguous() for k, v in get_peft_model_state_dict(policy).items()}
+        save_file(adapter, ckpt_dir / "adapter_model.safetensors")
+        policy.config._save_pretrained(ckpt_dir)
+        params = self.cfg.method.params
+        write_json(
+            ckpt_dir / model_load.CKPT_META,
+            {
+                "kind": "lora",
+                "lora_r": int(params.get("r", 16)),
+                "lora_alpha": int(params.get("alpha", 32)),
+                "base": str(self.cfg.s1_ckpt) if self.cfg.s1_ckpt else None,
+                **meta,
+            },
+        )
+
+    def load_weights(self, policy: torch.nn.Module, ckpt_dir: Path) -> None:
+        from peft import set_peft_model_state_dict
+        from safetensors.torch import load_file
+
+        result = set_peft_model_state_dict(policy, load_file(ckpt_dir / "adapter_model.safetensors"))
+        if result.unexpected_keys:
+            raise RuntimeError(f"Unexpected adapter keys: {result.unexpected_keys[:5]}")
 
     def post_train(self, ckpt_dir: str | Path, cfg: RunConfig) -> None:
         params = cfg.method.params

@@ -118,3 +118,9 @@ class MergeMethod(FullSFT):
     """Training is identical to M1. Merging happens only at eval time."""
 
     name = "merge"
+
+
+class LayerMerge(MergeMethod):
+    """M8 (optional): merging with a separate alpha for the early, mid, and late LM groups."""
+
+    name = "layer_merge"
