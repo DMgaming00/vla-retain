@@ -32,7 +32,6 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-q"
 markers = [
     "real_model: requires a cached copy of lerobot/smolvla_base",
 ]

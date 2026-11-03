@@ -48,3 +48,7 @@ One line per decision, with the date and the reason. Lines tagged `[spec-conflic
 - 2026-11-02: Arguments reach sbatch scripts as positional parameters, because `--export` splits values on commas and alpha specs contain commas.
 - 2026-11-02: `scripts/smoke.py --download-only` writes LIBERO's config and fetches its assets on the login node, because LIBERO's first import calls `input()` and assets download on demand, and both would fail in a batch job.
 - 2026-11-02: We keep the repository name `vla-retain` for now, and flag to the owners that arXiv:2610.27698 (October 2026) uses the name VLA-Retain for a benchmark on vision tuning, so that they can decide on renaming and citing it.
+- 2026-11-03: The vision encoder stays frozen in every method, because the study concerns forgetting in the LM and the expert, and this keeps the comparison focused there.
+- 2026-11-03: `libero_goal` serves as the language test, because its tasks share one scene and differ in goal and instruction, so success depends on language.
+- 2026-11-03: We shard evals by task and measure throughput first, because at 750 rollouts per checkpoint evaluation parallelism dominates the project's cost.
+- 2026-11-03: Merges stay in memory, because a full checkpoint is about 1.8 GB and sweeps visit up to 27 settings per run.
