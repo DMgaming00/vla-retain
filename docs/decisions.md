@@ -43,3 +43,6 @@ One line per decision, with the date and the reason. Lines tagged `[spec-conflic
 - 2026-11-02: The MMD uses shared noise and the biased V-statistic, because both keep it exactly 0 when the policy equals S1, as the protocol requires, and non-negative.
 - 2026-11-02: Figures use a validated categorical palette, with a marker on every method, because no method should be identified by color alone.
 - 2026-11-02: Velocity distance samples t uniformly, rather than from the training Beta distribution, to weight the whole field equally.
+- 2026-11-02: `chain.sh` queues all links up front with afterany, rather than having a job resubmit itself, because a job killed before its last shell line could never resubmit; links exit at once when DONE exists, and rerunning the command extends the chain if it runs out.
+- 2026-11-02: Eval and drift jobs use `--requeue` and training links use `--no-requeue`, because repeated evals are harmless while a requeued link would race the next link in its chain.
+- 2026-11-02: Arguments reach sbatch scripts as positional parameters, because `--export` splits values on commas and alpha specs contain commas.

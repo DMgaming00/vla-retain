@@ -91,12 +91,13 @@ def build_plan(rows, root: Path, s1_run: str, methods: list[str], step: int, sel
 
 
 def plan_lines(plan: dict) -> list[str]:
-    """`train <config> <trial> <seed>` and `merge <grid> <alpha> <seed>` lines, for the launch script."""
+    """`train <config> <trial> <seed>` and `merge <grid> <alpha> <seed> <m1_trial>` lines, for the launch script."""
     lines = []
     for item in plan["trained"]:
         lines += [f"train {item['config']} {item['trial']} {seed}" for seed in plan["seeds"]]
+    m1_trial = next((t["trial"] for t in plan["trained"] if t["method"] == "sft_full"), None)
     for item in plan["merges"]:
-        lines += [f"merge {item['grid']} {item['alpha_spec']} {seed}" for seed in plan["seeds"]]
+        lines += [f"merge {item['grid']} {item['alpha_spec']} {seed} {m1_trial}" for seed in plan["seeds"]]
     return lines
 
 

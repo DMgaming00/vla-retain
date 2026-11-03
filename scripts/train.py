@@ -19,6 +19,7 @@ def parse_args(argv=None) -> argparse.Namespace:
     parser.add_argument("--dry-run", action="store_true", help="print the resolved config and exit")
     parser.add_argument("--print-run-id", action="store_true", help="print only the run id and exit")
     parser.add_argument("--print-done", action="store_true", help="print 1 if the run has a DONE marker, else 0")
+    parser.add_argument("--print-n-trials", action="store_true", help="print the number of tuning trials and exit")
     parser.add_argument("--allow-disabled", action="store_true", help="run a method disabled by default")
     return parser.parse_args(argv)
 
@@ -33,6 +34,9 @@ def resolve(args: argparse.Namespace):
 def main(argv=None) -> int:
     args = parse_args(argv)
     cfg = resolve(args)
+    if args.print_n_trials:
+        print(len(cfg.tuning))
+        return 0
     if args.print_run_id:
         print(run_id_of(cfg))
         return 0

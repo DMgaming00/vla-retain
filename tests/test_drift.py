@@ -173,7 +173,6 @@ def test_probe_round_trip_and_refuses_to_overwrite(tmp_path):
 # ---------- drift rows and self-replay ----------
 def test_metric_rows_cover_both_probe_splits_and_every_group():
     from drift import metric_rows
-
     from vlaretain.models.modules import GROUPS
 
     per_split = {"action_chunk_distance": 1.0, "velocity_distance": 2.0, "action_mmd": 3.0, "cka_distance": {0: 0.1, 1: 0.2}}

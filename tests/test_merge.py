@@ -1,6 +1,6 @@
+import pytest
 import torch
 from peft import LoraConfig, get_peft_model_state_dict, inject_adapter_in_model
-import pytest
 
 from tests.tiny import NUM_LAYERS, make_tiny_policy
 from vlaretain.methods.lora import lora_target_regex
