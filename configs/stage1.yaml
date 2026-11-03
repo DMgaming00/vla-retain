@@ -1,0 +1,14 @@
+# Stage-1: fine-tune smolvla_base on spatial + object + goal, producing S1.
+stage: 1
+s1_run: ""
+model:
+  train_expert_only: true
+data:
+  suites: [libero_spatial, libero_object, libero_goal]
+train:
+  steps: 40000
+  lr: 1.0e-4
+  milestones: [10000, 20000, 40000]
+method:
+  name: stage1
+  id: S1

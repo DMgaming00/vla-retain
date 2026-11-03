@@ -1,0 +1,7 @@
+method: {name: sft_expert, id: M0}
+model: {train_expert_only: true}
+train: {lr: 3.0e-5}
+tuning:
+  - {train.lr: 1.0e-5}
+  - {train.lr: 3.0e-5}
+  - {train.lr: 1.0e-4}

@@ -21,3 +21,15 @@ One line per decision, with the date and the reason. Lines tagged `[spec-conflic
 - 2026-11-02: Rolling resume state lives in `checkpoints/latest`, swapped in by directory rename, because a job killed mid-save must not corrupt the only resume point.
 - 2026-11-02: Stage-2 reuses S1's saved normalization stats, because any change in action normalization would shift every comparison against S1 and would make weight merges inconsistent.
 - 2026-11-02: Stage-1 stats are dataset-level (all 40 tasks), because they ship with the pinned revision; this leaks summary statistics of libero_10 into S1 but no demonstrations.
+- 2026-11-02: [spec-conflict] M5 tunes lambda over {1e-2, 1e-1, 1} and drops 1e-3 from tuning, because the brief lists 4 values but allows 3 trials per method, and with a mean-squared penalty 1e-3 is closest to plain M1.
+- 2026-11-02: M3's 3 trials are (2%, 3e-5), (10%, 3e-5), (10%, 1e-4), because the budget cannot cover the full pool-by-learning-rate grid.
+- 2026-11-02: M0, M1, M3, and M5 share the M1 trainable set where they train the LM, and use learning rate 3e-5 unless tuned, because it is the middle of the brief's grid.
+- 2026-11-02: Stage-1 trains expert-only at learning rate 1e-4, because that is LeRobot's default and the setting of the public `smolvla_libero` checkpoint; the first LM movement then happens in Stage-2, which gives M1 a clean contrast with M0.
+- 2026-11-02: Eval replans every 10 steps (`n_action_steps=10`), because replanning on every step multiplies denoising cost and a full chunk of 50 reacts too slowly; the value is a flag and the smoke test reports its cost.
+- 2026-11-02: Envs run at 256x256 rather than the env-config default of 360, to match the dataset's frames.
+- 2026-11-02: libero_goal success is read from the retention rows, because those are the same episodes and rerunning them would cost 100 rollouts.
+- 2026-11-02: The instruction swap gives each goal task the next task's instruction and scores against the swapped goal, because all 10 goal tasks share one scene, so the result measures whether the policy follows language.
+- 2026-11-02: A checkpoint's eval totals 750 rollouts (300 + 200 + 200 + 50), slightly above the brief's approximate 700, because the swap test adds 50.
+- 2026-11-02: Validation uses init states 40-44 on every task (200 rollouts), because a merge sweep repeats it for each alpha and the 20-episode budget would cost too much; test sets use indices below 20, so the two are disjoint.
+- 2026-11-02: Robustness tasks are 3 spatial, 4 object, 3 goal at evenly spaced ids, because the brief asks for 10 fixed Stage-1 tasks and even spacing avoids hand-picking.
+- 2026-11-02: Camera perturbation moves only the agentview camera, because the wrist camera is rigidly mounted on the robot.

@@ -223,3 +223,40 @@ def test_bfloat16_cannot_hold_small_updates():
     update = torch.tensor(3e-5, dtype=torch.bfloat16)
     assert weight - update == weight
     assert torch.tensor(0.02, dtype=torch.float32) - 3e-5 != torch.tensor(0.02, dtype=torch.float32)
+
+
+# ---------- shipped configs ----------
+def test_shipped_method_configs_load_and_give_distinct_run_ids():
+    from pathlib import Path
+
+    from vlaretain.methods import get_method
+
+    root = Path(__file__).resolve().parents[1] / "configs"
+    ids = set()
+    names = ["sft_expert", "sft_full", "lora", "replay", "merge", "l2sp", "anchor", "self_replay", "layer_merge"]
+    for name in names:
+        cfg = load_config([root / "base.yaml", root / "methods" / f"{name}.yaml"], ["s1_run=abc"])
+        assert get_method(cfg).name == cfg.method.name == name
+        for trial in cfg.tuning:
+            extra = [f"{k}={v}" for k, v in trial.items()]
+            ids.add(run_id_of(load_config([root / "base.yaml", root / "methods" / f"{name}.yaml"], ["s1_run=abc", *extra])))
+    # M0, M1, M2, M3, M5 have 3 trials each; M6 has 2 and M7 has 1.
+    assert len(ids) == 3 * 5 + 2 + 1
+
+
+def test_disabled_methods_are_disabled():
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1] / "configs" / "methods"
+    states = {p.stem: load_config([p]).method.enabled for p in root.glob("*.yaml")}
+    assert {k for k, v in states.items() if not v} == {"anchor", "self_replay", "layer_merge"}
+
+
+def test_stage1_config():
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1] / "configs"
+    cfg = load_config([root / "base.yaml", root / "stage1.yaml"])
+    assert cfg.stage == 1 and cfg.train.steps == 40000 and cfg.s1_ckpt is None
+    assert cfg.train.milestones[-1] == 40000
+    assert set(cfg.data.suites) == {"libero_spatial", "libero_object", "libero_goal"}

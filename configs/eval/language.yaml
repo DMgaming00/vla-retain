@@ -1,0 +1,4 @@
+# Instruction swap on libero_goal. Plain libero_goal success is read from the retention rows.
+eval_seed: 12345
+n_episodes: 5
+init_offset: 0

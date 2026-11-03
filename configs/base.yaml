@@ -1,0 +1,31 @@
+# Settings shared by every Stage-2 run. Stage-1 overlays configs/stage1.yaml.
+stage: 2
+seed: 0
+s1_step: 40000
+model:
+  base: lerobot/smolvla_base
+  base_revision: 5e8d12a6e2975b0e5e5fce7c8caf47c371d257b6
+  freeze_vision_encoder: true
+  train_state_proj: true
+data:
+  repo_id: lerobot/libero
+  revision: a1aaacb7f6cd6ee5fb43120f673cebb0cfea7dd4
+  suites: [libero_10]
+  splits_file: splits/episodes.json
+  num_workers: 8
+train:
+  steps: 20000
+  batch_size: 32
+  warmup_steps: 1000
+  min_lr: 2.5e-6
+  betas: [0.9, 0.95]
+  eps: 1.0e-8
+  weight_decay: 1.0e-10
+  grad_clip_norm: 10.0
+  save_every: 1000
+  milestones: [2000, 5000, 10000, 20000]
+  log_every: 100
+paths:
+  run_root: runs
+  results_dir: results
+  probe_file: probes/probe_v1.pt

@@ -1,0 +1,5 @@
+# M4 trains nothing of its own: scripts/merge_sweep.py merges the selected M1 run with S1 in memory.
+method: {name: merge, id: M4}
+model: {train_expert_only: false}
+train: {lr: 3.0e-5}
+tuning: []

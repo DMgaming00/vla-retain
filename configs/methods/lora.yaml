@@ -1,0 +1,10 @@
+method:
+  name: lora
+  id: M2
+  params: {r: 16, alpha: 32, dropout: 0.05}
+model: {train_expert_only: true}
+train: {lr: 3.0e-4}
+tuning:
+  - {train.lr: 1.0e-4}
+  - {train.lr: 3.0e-4}
+  - {train.lr: 1.0e-3}

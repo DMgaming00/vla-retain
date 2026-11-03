@@ -1,0 +1,9 @@
+# Each batch is 80% target and 20% replay. The pool is 2% or 10% of Stage-1 episodes, fixed by seed.
+method: {name: replay, id: M3}
+model: {train_expert_only: false}
+data: {replay_fraction: 0.2, replay_pool_fraction: 0.02}
+train: {lr: 3.0e-5}
+tuning:
+  - {data.replay_pool_fraction: 0.02, train.lr: 3.0e-5}
+  - {data.replay_pool_fraction: 0.10, train.lr: 3.0e-5}
+  - {data.replay_pool_fraction: 0.10, train.lr: 1.0e-4}

@@ -114,6 +114,28 @@ def layer_alpha_grid(values: tuple[float, ...] = (0.25, 0.5, 1.0), expert: float
     ]  # fmt: skip
 
 
+def select_alpha(rows: list[dict], run_id: str, step: int, grid: list[str]) -> dict:
+    """Pick the alpha with the best validation mean(target SR, retention SR). Ties go to the earlier grid entry."""
+    best, missing = None, []
+    for spec in grid:
+        scores = {}
+        for eval_set in ("validation_target", "validation_retention"):
+            match = [
+                r for r in rows
+                if r.get("run_id") == run_id and r.get("step") == step and r.get("alpha_spec") == spec
+                and r.get("eval_set") == eval_set
+            ]  # fmt: skip
+            if match:
+                scores[eval_set] = sum(r["n_success"] for r in match) / sum(r["n_episodes"] for r in match)
+        if len(scores) < 2:
+            missing.append(spec)
+            continue
+        score = (scores["validation_target"] + scores["validation_retention"]) / 2
+        if best is None or score > best["score"]:
+            best = {"alpha_spec": spec, "score": score, **scores}
+    return {"best": best, "missing": missing}
+
+
 class MergeMethod(FullSFT):
     """Training is identical to M1. Merging happens only at eval time."""
 

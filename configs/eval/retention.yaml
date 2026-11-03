@@ -1,0 +1,4 @@
+# Eval set: retention.
+eval_seed: 12345
+n_episodes: 10
+init_offset: 0

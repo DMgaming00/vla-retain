@@ -1,0 +1,12 @@
+# L = L_action + lam * mean over trainable params of (theta - theta_S1)^2.
+# The protocol lists lam in {1e-3, 1e-2, 1e-1, 1}, and the budget allows 3 trials; see docs/decisions.md.
+method:
+  name: l2sp
+  id: M5
+  params: {lam: 1.0e-1}
+model: {train_expert_only: false}
+train: {lr: 3.0e-5}
+tuning:
+  - {method.params.lam: 1.0e-2}
+  - {method.params.lam: 1.0e-1}
+  - {method.params.lam: 1.0}

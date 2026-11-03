@@ -1,0 +1,7 @@
+# Optional, disabled by default. Replay from S1's own successful rollouts, written by vlaretain.data.self_replay.
+method: {name: self_replay, id: M7, enabled: false}
+model: {train_expert_only: false}
+data: {replay_fraction: 0.2, replay_source: self_rollouts, self_replay_root: self_replay}
+train: {lr: 3.0e-5}
+tuning:
+  - {train.lr: 3.0e-5}

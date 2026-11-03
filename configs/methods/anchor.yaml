@@ -1,0 +1,11 @@
+# Optional, disabled by default. Cosine distance to frozen S1 hidden states on the LM mid and last layers.
+method:
+  name: anchor
+  id: M6
+  enabled: false
+  params: {lam: 0.1}
+model: {train_expert_only: false}
+train: {lr: 3.0e-5}
+tuning:
+  - {method.params.lam: 0.1}
+  - {method.params.lam: 1.0}

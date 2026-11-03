@@ -1,0 +1,5 @@
+# Optional, disabled by default. Per-layer-group merging of the selected M1 run: early, mid, late.
+method: {name: layer_merge, id: M8, enabled: false}
+model: {train_expert_only: false}
+train: {lr: 3.0e-5}
+tuning: []
