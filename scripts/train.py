@@ -52,7 +52,11 @@ def main(argv=None) -> int:
     if not cfg.method.enabled and not args.allow_disabled:
         raise SystemExit(f"Method {cfg.method.name} is disabled by default; pass --allow-disabled to run it")
 
-    # UNVERIFIED: needs GPU/LIBERO
+    return run_training(cfg)
+
+
+# UNVERIFIED: needs GPU/LIBERO
+def run_training(cfg) -> int:
     from vlaretain.methods import get_method
     from vlaretain.train.loop import build_train_data, make_processors, train
 

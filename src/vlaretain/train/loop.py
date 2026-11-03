@@ -108,6 +108,7 @@ def milestone_name(step: int) -> str:
     return f"step_{step:06d}"
 
 
+# UNVERIFIED: needs GPU/LIBERO
 def train(
     cfg: RunConfig,
     method,
@@ -246,6 +247,7 @@ def _subset_dataset(cfg: RunConfig, policy_config, episodes: list[int] | None, r
     )  # fmt: skip
 
 
+# UNVERIFIED: needs GPU/LIBERO
 def make_processors(cfg: RunConfig, policy, device: str | None = None):
     """Stage-1 builds fresh processors from dataset-level statistics; Stage-2 reuses S1's unchanged."""
     from lerobot.datasets import LeRobotDatasetMetadata
@@ -262,6 +264,7 @@ def make_processors(cfg: RunConfig, policy, device: str | None = None):
     return make_pre_post_processors(policy.config, dataset_stats=stats)
 
 
+# UNVERIFIED: needs GPU/LIBERO
 def build_train_data(cfg: RunConfig, policy_config, processors) -> TrainData:
     """Build [target, replay] from the episode index and the data.* config fields."""
     from torch.utils.data import ConcatDataset

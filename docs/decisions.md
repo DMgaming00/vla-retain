@@ -46,3 +46,5 @@ One line per decision, with the date and the reason. Lines tagged `[spec-conflic
 - 2026-11-02: `chain.sh` queues all links up front with afterany, rather than having a job resubmit itself, because a job killed before its last shell line could never resubmit; links exit at once when DONE exists, and rerunning the command extends the chain if it runs out.
 - 2026-11-02: Eval and drift jobs use `--requeue` and training links use `--no-requeue`, because repeated evals are harmless while a requeued link would race the next link in its chain.
 - 2026-11-02: Arguments reach sbatch scripts as positional parameters, because `--export` splits values on commas and alpha specs contain commas.
+- 2026-11-02: `scripts/smoke.py --download-only` writes LIBERO's config and fetches its assets on the login node, because LIBERO's first import calls `input()` and assets download on demand, and both would fail in a batch job.
+- 2026-11-02: We keep the repository name `vla-retain` for now, and flag to the owners that arXiv:2610.27698 (October 2026) uses the name VLA-Retain for a benchmark on vision tuning, so that they can decide on renaming and citing it.

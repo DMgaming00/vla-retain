@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import subprocess
 import sys
 import time
 
@@ -29,6 +30,7 @@ def parse_args(argv=None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
+# UNVERIFIED: needs GPU/LIBERO
 def download() -> None:
     from huggingface_hub import snapshot_download
 
@@ -39,6 +41,16 @@ def download() -> None:
     print(snapshot_download(SMOKE_CKPT, revision=SMOKE_REV))
     print(snapshot_download("HuggingFaceTB/SmolVLM2-500M-Video-Instruct", allow_patterns=["*.json", "*.txt", "*.jinja"]))
     print(snapshot_download(data.repo_id, repo_type="dataset", revision=data.revision))
+    prepare_libero()
+
+
+# UNVERIFIED: needs GPU/LIBERO
+def prepare_libero() -> None:
+    """LIBERO's first import asks a question on stdin and fetches assets on demand; a batch job can do neither."""
+    code = "import libero.libero as L; print(L.get_assets_path())"
+    done = subprocess.run([sys.executable, "-c", code], input="N\n", text=True, check=False)
+    if done.returncode != 0:
+        print("Warning: LIBERO could not be prepared. Is the libero extra installed? This needs Linux.")
 
 
 # UNVERIFIED: needs GPU/LIBERO
