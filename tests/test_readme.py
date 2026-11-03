@@ -146,7 +146,7 @@ def test_config_example_matches_the_shipped_file():
 
 
 def test_table_of_contents_links_match_headings():
-    contents = README.split("## Contents")[1].split("## Overview")[0]
+    contents = README.split("## Contents")[1].split("## Project status")[0]
     anchors = re.findall(r"\]\(#([^)]+)\)", contents)
     slugs = {_slug(h) for h in _headings(README)}
     assert len(anchors) >= 15
@@ -169,7 +169,7 @@ def test_relative_links_point_to_existing_files():
 
 def test_required_sections_are_in_order():
     wanted = [
-        "TL;DR", "Contents", "Overview", "What's implemented", "Methods", "Experimental protocol",
+        "TL;DR", "Contents", "Project status", "Overview", "What's implemented", "Methods", "Experimental protocol",
         "Drift and divergence metrics", "Repository layout", "Installation", "Quickstart",
         "Running on the HPC cluster", "Outputs and result schema", "Reproducibility",
         "Design decisions and trade-offs", "Results", "Limitations and scope", "Roadmap", "Citation",

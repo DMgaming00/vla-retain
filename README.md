@@ -13,6 +13,7 @@ Fine-tuning a pretrained vision-language-action model (VLA) on new tasks tends t
 
 ## Contents
 
+- [Project status](#project-status)
 - [Overview](#overview)
 - [What's implemented](#whats-implemented)
 - [Methods](#methods)
@@ -32,6 +33,40 @@ Fine-tuning a pretrained vision-language-action model (VLA) on new tasks tends t
 - [Acknowledgments](#acknowledgments)
 - [References](#references)
 - [License](#license)
+
+## Project status
+
+The code is complete and tested on CPU, and the experiments are next. Nothing has been trained or evaluated yet, so this repository holds no results.
+
+### Already done
+
+- **Protocol in code.** The two-stage protocol, all methods (M0-M5, plus optional M6-M8), and all eval sets are implemented behind config files.
+- **LeRobot integration.** We pinned LeRobot `v0.6.1`, read its source, and recorded each API we use in [docs/lerobot_notes.md](docs/lerobot_notes.md). The repository wraps LeRobot and does not fork it.
+- **Real-model checks.** On `lerobot/smolvla_base`, we confirmed the loss, sampling with supplied noise, per-layer hidden states, and the trainable sets of M0, M1, and M2.
+- **Fault tolerance.** Training resumes exactly after an interruption, saves and exits on a preemption signal, and evals skip finished work. CPU tests cover all three.
+- **Drift and analysis.** Drift metrics, divergence metrics, Pareto and correlation analysis, figures, and tables run end to end on synthetic data.
+- **Cluster launch layer.** One command launches each phase, and every launch script has `--dry-run`. We tested these with dry-runs and a fake `sbatch`, not on a real scheduler.
+
+### Not yet verified
+
+Rollouts, simulator perturbations, the instruction swap, and all GPU training have never run, because LIBERO needs Linux and these need a GPU. The smoke test is the first real check of this code, so some fixes are likely at that step. [docs/progress.md](docs/progress.md) lists every such function and the known risks.
+
+### Next steps
+
+Each step runs on the cluster, and each must succeed before the next one starts. The commands are explained in [Running on the HPC cluster](#running-on-the-hpc-cluster), and [docs/RUNBOOK.md](docs/RUNBOOK.md) has the full detail.
+
+| Step | Command | Done when |
+| --- | --- | --- |
+| 1. Configure | Fill the TODO values in `slurm/common.sh` | `bash slurm/launch_stage1.sh --dry-run` shows your settings |
+| 2. Smoke test | `sbatch ... slurm/smoke.sbatch` | The log ends in `SMOKE PASS`, and `VR_N_ENVS` is set from its table |
+| 3. Train S1 | `bash slurm/launch_stage1.sh` | S1 has a `DONE` marker and eval rows in `results/` |
+| 4. Pilots, Gate 1 | `bash slurm/launch_pilots.sh`, then `python scripts/check_gate1.py` | Gate 1 prints PASS |
+| 5. Tuning, Gate 2 | `bash slurm/launch_tuning.sh`, then `python scripts/check_gate2.py` | Gate 2 reports its interval |
+| 6. Finals | `bash slurm/launch_finals.sh` | 3 seeds per method are evaluated |
+| 7. Figures | `python scripts/aggregate.py --results results --out paper_assets --update-readme` | The [Results](#results) section fills in |
+| 8. Paper | Write up the outcome, whichever way the hypothesis goes | Submission to ICML 2027 |
+
+Before trusting any robustness result, we will check the perturbation strengths against S1's eval videos, since the current values are first guesses.
 
 ## Overview
 

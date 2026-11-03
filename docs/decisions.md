@@ -52,3 +52,4 @@ One line per decision, with the date and the reason. Lines tagged `[spec-conflic
 - 2026-11-03: `libero_goal` serves as the language test, because its tasks share one scene and differ in goal and instruction, so success depends on language.
 - 2026-11-03: We shard evals by task and measure throughput first, because at 750 rollouts per checkpoint evaluation parallelism dominates the project's cost.
 - 2026-11-03: Merges stay in memory, because a full checkpoint is about 1.8 GB and sweeps visit up to 27 settings per run.
+- 2026-11-03: Add a Project status section near the top of the README, because readers first need to know what is done and what comes next.
