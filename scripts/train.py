@@ -8,7 +8,7 @@ import json
 import logging
 import sys
 
-from vlaretain.config import apply_override, load_config, resolved_dict, run_id_of
+from vlaretain.config import load_config, resolved_dict, run_id_of, trial_config
 
 
 def parse_args(argv=None) -> argparse.Namespace:
@@ -25,12 +25,9 @@ def parse_args(argv=None) -> argparse.Namespace:
 
 def resolve(args: argparse.Namespace):
     cfg = load_config(args.config, args.overrides)
-    if args.trial is not None:
-        if not 0 <= args.trial < len(cfg.tuning):
-            raise SystemExit(f"--trial {args.trial} is outside the {len(cfg.tuning)} trials in this config")
-        extra = [f"{k}={v}" for k, v in cfg.tuning[args.trial].items()]
-        cfg = load_config(args.config, [*extra, *args.overrides])
-    return cfg
+    if args.trial is not None and not 0 <= args.trial < len(cfg.tuning):
+        raise SystemExit(f"--trial {args.trial} is outside the {len(cfg.tuning)} trials in this config")
+    return trial_config(args.config, args.trial, args.overrides)
 
 
 def main(argv=None) -> int:

@@ -201,3 +201,14 @@ def semantic_dict(cfg: RunConfig) -> dict[str, Any]:
 def run_id_of(cfg: RunConfig) -> str:
     canonical = json.dumps(semantic_dict(cfg), sort_keys=True, default=str)
     return hashlib.sha1(canonical.encode()).hexdigest()[:10]
+
+
+def trial_config(
+    configs: list[str | Path], trial: int | None = None, overrides: list[str] | None = None
+) -> RunConfig:
+    """The config of tuning trial `trial`. Explicit overrides win over the trial's values."""
+    cfg = load_config(configs, overrides)
+    if trial is None:
+        return cfg
+    extra = [f"{k}={v}" for k, v in cfg.tuning[trial].items()]
+    return load_config(configs, [*extra, *(overrides or [])])

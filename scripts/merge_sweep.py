@@ -24,7 +24,9 @@ def parse_args(argv=None) -> argparse.Namespace:
     parser.add_argument("--step", type=int, default=20_000)
     parser.add_argument("--grid", choices=sorted(GRIDS), default="global")
     parser.add_argument("--alpha-index", type=int, default=None, help="evaluate one grid entry on validation")
-    parser.add_argument("--select", action="store_true", help="choose the best alpha and run the full eval")
+    parser.add_argument("--select", action="store_true", help="choose the best alpha from validation results")
+    parser.add_argument("--full-eval", action="store_true", help="with --select: also run the full eval at that alpha")
+    parser.add_argument("--with-drift", action="store_true", help="with --select or --alpha: also measure drift")
     parser.add_argument("--alpha", default=None, help="skip selection and run the full eval at this alpha")
     parser.add_argument("--list", action="store_true", help="print the grid size and exit")
     parser.add_argument("--run-root", default="runs")
@@ -50,6 +52,18 @@ def _eval(args, step: int, alpha: str, eval_sets: list[str]) -> int:
     return eval_main(argv)
 
 
+def _drift(args, alpha: str) -> int:
+    from drift import main as drift_main
+
+    return drift_main([
+        "--run-id", args.run_id, "--steps", str(args.step), "--alpha", alpha, "--method-label", LABELS[args.grid],
+        "--run-root", args.run_root, "--results", args.results, "--device", args.device,
+    ])  # fmt: skip
+
+
+FULL_SETS = ["retention", "target", "robustness", "language"]
+
+
 def main(argv=None) -> int:
     args = parse_args(argv)
     grid = GRIDS[args.grid]()
@@ -64,7 +78,8 @@ def main(argv=None) -> int:
             print(f"  {spec}")
         return 0
     if args.alpha is not None:
-        return _eval(args, args.step, args.alpha, ["retention", "target", "robustness", "language"])
+        code = _eval(args, args.step, args.alpha, FULL_SETS)
+        return _drift(args, args.alpha) if args.with_drift and code == 0 else code
     if args.alpha_index is not None:
         return _eval(args, args.step, grid[args.alpha_index], ["validation"])
     if args.select:
@@ -80,7 +95,8 @@ def main(argv=None) -> int:
             f"{args.results}/{SELECTION_FILE}",
             [{"selection": True, "run_id": args.run_id, "step": args.step, "grid": args.grid, **best}],
         )
-        return _eval(args, args.step, best["alpha_spec"], ["retention", "target", "robustness", "language"])
+        code = _eval(args, args.step, best["alpha_spec"], FULL_SETS) if args.full_eval else 0
+        return _drift(args, best["alpha_spec"]) if args.with_drift and code == 0 else code
     raise SystemExit("Pass one of --list, --dry-run, --alpha-index, --alpha, or --select")
 
 

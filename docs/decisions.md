@@ -33,3 +33,13 @@ One line per decision, with the date and the reason. Lines tagged `[spec-conflic
 - 2026-11-02: Validation uses init states 40-44 on every task (200 rollouts), because a merge sweep repeats it for each alpha and the 20-episode budget would cost too much; test sets use indices below 20, so the two are disjoint.
 - 2026-11-02: Robustness tasks are 3 spatial, 4 object, 3 goal at evenly spaced ids, because the brief asks for 10 fixed Stage-1 tasks and even spacing avoids hand-picking.
 - 2026-11-02: Camera perturbation moves only the agentview camera, because the wrist camera is rigidly mounted on the robot.
+- 2026-11-02: Gate 2 measures forgetting on validation episodes, because tuning decisions should never touch the test init states; S1 is evaluated on validation for the same reason.
+- 2026-11-02: Tuning trials are evaluated and measured at steps 5k and 20k only, because the full 750-rollout eval at every milestone of every trial exceeds the compute budget.
+- 2026-11-02: Finals use seeds 1, 2, 3 and tuning uses seed 0, because reusing the selected seed would bias final numbers upward.
+- 2026-11-02: Bootstrap CIs on correlations resample runs rather than checkpoints, because checkpoints of one run are not independent.
+- 2026-11-02: Partial evals are dropped from checkpoint tables rather than averaged, because a mean over a subset of tasks is not comparable.
+- 2026-11-02: M4's compute in the matched-hours view adds its validation sweep to the M1 training hours, because those rollouts are the price of choosing alpha.
+- 2026-11-02: M4 merges the M1 run selected on validation, chosen after tuning, because sweeping all 3 M1 trials would triple an already large sweep.
+- 2026-11-02: The MMD uses shared noise and the biased V-statistic, because both keep it exactly 0 when the policy equals S1, as the protocol requires, and non-negative.
+- 2026-11-02: Figures use a validated categorical palette, with a marker on every method, because no method should be identified by color alone.
+- 2026-11-02: Velocity distance samples t uniformly, rather than from the training Beta distribution, to weight the whole field equally.

@@ -19,9 +19,14 @@ wandb/
 slurm-*.out
 logs/
 
-# Generated figures are rebuilt from results/
-paper_assets/
+# Demo figures from synthetic data are never tracked
+paper_assets/demo/
 
 # Local environment
 .env
 .DS_Store
+
+# Written by the launch layer on the cluster
+plans/*.json
+self_replay/
+runs/

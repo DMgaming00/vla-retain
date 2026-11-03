@@ -163,3 +163,20 @@ def test_m2_trainable_set(capsys, monkeypatch):
     loss.backward()
     grads = [p.grad for n, p in policy.named_parameters() if "lora_B" in n and "lm_expert" in n]
     assert any(g is not None and g.abs().sum() > 0 for g in grads)
+
+
+def test_preprocessor_keeps_what_the_divergence_metrics_read(m0):
+    batch = _batch(m0)
+    assert "action_is_pad" in batch and batch["action"].shape[1] == m0.config.chunk_size
+
+
+def test_divergences_are_zero_against_itself_on_the_real_model(m0):
+    from vlaretain.drift.divergence import DivergenceConfig, compute_probe_metrics
+
+    m0.config.num_steps = 2
+    m0.eval()
+    cfg = DivergenceConfig(n_action_samples=2, n_velocity_draws=1)
+    metrics = compute_probe_metrics(m0, m0, [_batch(m0, n=2)], cfg)
+    assert metrics["action_chunk_distance"] == 0.0 and metrics["velocity_distance"] == 0.0
+    assert metrics["action_mmd"] == 0.0
+    assert all(abs(v) < 1e-9 for v in metrics["cka_distance"].values()) and len(metrics["cka_distance"]) == 16
