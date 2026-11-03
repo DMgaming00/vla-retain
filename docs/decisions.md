@@ -10,3 +10,9 @@ One line per decision, with the date and the reason. Lines tagged `[spec-conflic
 - 2026-11-02: Use `HuggingFaceVLA/smolvla_libero` as the smoke-test checkpoint, because its features match LIBERO keys and it ships processors.
 - 2026-11-02: Use our own perturbation wrapper, not LIBERO-Plus, because LIBERO-Plus replaces `hf-libero` in the environment, needs system packages we cannot assume on the cluster, and would force a second environment for robustness evals.
 - 2026-11-02: Add an MIT `LICENSE` because the repository had none.
+- 2026-11-02: Commit `splits/episodes.json` because it derives only from the pinned dataset revision and removes a cluster step.
+- 2026-11-02: A 2% replay pool has fewer episodes than Stage-1 has tasks, so some tasks get none; we keep the exact 2% from the brief rather than inflating it to one episode per task.
+- 2026-11-02: Replay batches use error diffusion (6 or 7 of 32), because 20% of 32 is not an integer and this keeps the long-run share at exactly 20%.
+- 2026-11-02: The batch sampler and per-step RNG are pure functions of (seed, step), because this makes resume exact without saving sampler or RNG state.
+- 2026-11-02: LM groups are thirds (early 0-4, mid 5-10, late 11-15); `embed_tokens` joins early, and `text_model.norm` and `lm_head` join late; `state_proj` joins the expert because M0 trains it.
+- 2026-11-02: In per-module merges the connector follows the LM, because it feeds the LM and the brief's grid has only LM and expert axes.
